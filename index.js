@@ -7,6 +7,7 @@ const fs = require('fs');
 
 client.on('ready', () => {
     console.log(`[Discord API] Logged in as ${client.user.username}`.yellow);
+    client.user.setActivity({ name: "Github: FnrDev", type: "WATCHING" })
 })
 
 client.on('messageCreate', async message => {

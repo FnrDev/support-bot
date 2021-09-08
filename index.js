@@ -4,6 +4,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 const config = require('./config.json');
 require('colors');
 const fs = require('fs');
+const wait = require('util').promisify(setTimeout);
 
 client.on('ready', () => {
     console.log(`[Discord API] Logged in as ${client.user.username}`.yellow);
@@ -57,13 +58,48 @@ client.on('interactionCreate', async interaction => {
         })
     }
     if (interaction.customId === 'sos') {
-        const support = client.channels.cache.get(config.support_channel_id);
-        if (!support) return;
-        if (support.permissionsFor(interaction.user.id).toArray().includes('VIEW_CHANNEL')) {
-            return interaction.reply({ content: `:x: ${interaction.user} You already have access for ${support} channel`, ephemeral: true })
-        }
-        await support.permissionOverwrites.edit(interaction.user.id, { VIEW_CHANNEL: true });
-        interaction.reply({ content: `<@${interaction.user.id}> You can ask your question in ${support} channel`, ephemeral: true })
+        const tickChannel = await interaction.guild.channels.create(`${interaction.user.username}-ticket`, {
+            parent: config.categoryId,
+            permissionOverwrites: [
+                {
+                    allow: ["VIEW_CHANNEL", "SEND_MESSAGES"],
+                    id: interaction.user.id
+                },
+                {
+                    allow: ["SEND_MESSAGES", "VIEW_CHANNEL", "MANAGE_MESSAGES", "MANAGE_CHANNELS"],
+                    id: config.supportRoleId
+                },
+                {
+                    deny: ["VIEW_CHANNEL", "SEND_MESSAGES"],
+                    id: interaction.guild.id
+                }
+            ]
+        });
+        const embed = new Discord.MessageEmbed()
+        .setAuthor(interaction.user.tag, interaction.user.displayAvatarURL({ dynamic: true }))
+        .setDescription(`Support will be with you shortly.\nTo close this ticket react with 🔒`)
+        .setColor('#F10FF8')
+        .setFooter(`${interaction.guild.name} Support`, interaction.guild.iconURL({ dynamic: true }))
+        .setTimestamp()
+        const row = new Discord.MessageActionRow()
+        .addComponents(
+            new Discord.MessageButton()
+            .setCustomId('close')
+            .setStyle('DANGER')
+            .setLabel('Close')
+            .setEmoji('🔒')
+        )
+        tickChannel.send({ content: interaction.user.toString(), embeds: [embed], components: [row] })
+        interaction.reply({ content: `✅ ${interaction.user.toString()} You can ask your question in ${tickChannel}`, ephemeral: true });
+        const collector = tickChannel.createMessageComponentCollector()
+        collector.on('collect', async i => {
+            if (i.customId === 'close') {
+                await i.deferReply()
+                const msg = await i.editReply(':x: **Deleteing ticket in 5 secounds**')
+                await wait(5000)
+                msg.channel.delete()
+            }
+        })
     }
 })
 

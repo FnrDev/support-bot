@@ -13,7 +13,6 @@ client.on('ready', () => {
 
 client.on('messageCreate', async message => {
     if (message.content === '##sendmsg') {
-        if (message.author.id !== '596227913209217024') return;
         if (message.author.bot) return;
         const supportChannel = client.channels.cache.get(config.msgChannel);
         if (!supportChannel) return;

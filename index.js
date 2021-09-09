@@ -86,7 +86,7 @@ client.on('interactionCreate', async interaction => {
             new Discord.MessageButton()
             .setCustomId('close')
             .setStyle('DANGER')
-            .setLabel('Close')
+            .setLabel('Delete')
             .setEmoji('🔒')
         )
         tickChannel.send({ content: interaction.user.toString(), embeds: [embed], components: [row] })

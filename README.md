@@ -17,11 +17,15 @@ npm install
 ### You need to create config.json file
 
 - config.json
+- token = Discord Bot Token
+- msgChannel = Channel id for bot to send message
+- supportRoleId = support role id for permissions in ticket
 ```js
 {
-    "token": "YOUR_DISCORD_TOKEN",
-    "msgChannel": "CHANNEL ID FOR MESSAGE YOU WANT TO SEND",
-    "support_channel_id": "CHANNEL ID FOR SUPPORT CHANNEL WHO CHOOSE OPTION SUS"
+    "token": "YOUR_DISCORD_BOT_TOKEN",
+    "msgChannel": "CHANNEL_ID",
+    "categoryId": "CATEGORY_ID",
+    "supportRoleId": "SUPPORT_ROLE_ID"
 }
 ```
 

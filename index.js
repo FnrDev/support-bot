@@ -104,18 +104,19 @@ client.on('messageCreate', async message => {
         const row = new Discord.MessageActionRow()
         .addComponents(
             new Discord.MessageSelectMenu()
-            .setCustomId('men')
+            .setCustomId('mention')
             .setPlaceholder('Get Notifications')
-            .setMaxValues(2)
             .addOptions([
                 {
                     label: "Giveaways Mention",
                     emoji: "🎉",
+                    description: "Get notifications when giveaway started",
                     value: "giveaway"
                 },
                 {
                     label: "Announcemnt Mention",
                     emoji: "🔔",
+                    description: "Get notification for important news",
                     value: "announcemnt"
                 },
             ])
@@ -186,10 +187,11 @@ client.on('interactionCreate', async interaction => {
 
 client.on('interactionCreate', async interaction => {
     if (!interaction.isSelectMenu()) return;
+    // start of lang select menu
     if (interaction.customId === 'lang') {
         if (interaction.values.includes('ar')) {
             const arabicRole = interaction.guild.roles.cache.get('844954800445194291');
-            if (!arabicRole) return;
+            if (!arabicRole) return interaction.reply({ content: "i can\'t find arabic role", ephemeral: true });
             if (interaction.member.roles.cache.has(arabicRole.id)) {
                 await interaction.member.roles.remove(arabicRole, `Removed arabic role by select menu`);
                 interaction.reply({ content: "Roles Changed.", ephemeral: true })
@@ -200,7 +202,7 @@ client.on('interactionCreate', async interaction => {
         }
         if (interaction.values.includes('en')) {
             const englishRole = interaction.guild.roles.cache.get('844954830183333908');
-            if (!englishRole) return;
+            if (!englishRole) return interaction.reply({ content: "i can\'t find english role", ephemeral: true });
             if (interaction.member.roles.cache.has(englishRole.id)) {
                 await interaction.member.roles.remove(englishRole, `Removed english role by select menu`)
                 interaction.reply({ content: "Roles Changed.", ephemeral: true })
@@ -208,7 +210,64 @@ client.on('interactionCreate', async interaction => {
                 await interaction.member.roles.add(englishRole, `Added english role by select menu`);
                 interaction.reply({ content: "Roles Changed.", ephemeral: true })
             }
-            await interaction.member.roles.add(englishRole, `Added english role by select menu`)
+        }
+    }
+    // end of lang select menu
+    // Start of gender select meun
+    if (interaction.customId === 'gen') {
+        if (interaction.values.includes('man')) {
+            const manRole = interaction.guild.roles.cache.get('886910293458964491');
+            if (!manRole) return interaction.reply({ content: "i can\'t find man role", ephemeral: true });
+            if (interaction.member.roles.cache.has(manRole.id)) {
+                await interaction.member.roles.remove(manRole, `Removed man role by select menu`)
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            } else {
+                await interaction.member.roles.add(manRole, `Added man role by select menu`)
+                interaction.reply({ content: "Roles Changed", ephemeral: true })
+            }
+        }
+        if (interaction.values.includes('girl')) {
+            const girlRole = interaction.guild.roles.cache.get('886910360232275968');
+            if (!girlRole) return interaction.reply({ content: "i can\'t find girl role", ephemeral: true });
+            if (interaction.values.includes('girl')) {
+                const manRole = interaction.guild.roles.cache.get('886910293458964491');
+                interaction.member.roles.remove(manRole, `Remove man role by select menu`)
+            }
+            if (interaction.values.includes('man')) {
+                const girlRole = interaction.guild.roles.cache.get('886910360232275968');
+                interaction.member.roles.remove(girlRole, `Remove girl role by select menu`)
+            }
+            if (interaction.member.roles.cache.has(girlRole.id)) {
+                await interaction.member.roles.remove(girlRole, `Removed girl role by select menu`)
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            } else {
+                await interaction.member.roles.add(girlRole, `Added girl role by select menu`)
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            }
+        }
+    }
+    if (interaction.customId === 'mention') {
+        if (interaction.values.includes('giveaway')) {
+            const giveawayRole = interaction.guild.roles.cache.get('886922365852848138');
+            if (!giveawayRole) return interaction.reply({ content: "i can\'t find giveaway role", ephemeral: true });
+            if (interaction.member.roles.cache.has(giveawayRole.id)) {
+                await interaction.member.roles.remove(giveawayRole, `Removed giveaway role by select menu`)
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            } else {
+                await interaction.member.roles.add(giveawayRole, `Added giveaway role by select menu`);
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            }
+        }
+        if (interaction.values.includes('announcemnt')) {
+            const announcemntRole = interaction.guild.roles.cache.get('886922453882904646');
+            if (!announcemntRole) return interaction.reply({ content: "i can\'t find announcement role", ephemeral: true })
+            if (interaction.member.roles.cache.has(announcemntRole.id)) {
+                await interaction.member.roles.remove(announcemntRole, `Removed announcement role by select menu`);
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            } else {
+                await interaction.member.roles.add(announcemntRole, `Added announcement role by select menu`);
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            }
         }
     }
 })

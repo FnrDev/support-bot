@@ -43,6 +43,87 @@ client.on('messageCreate', async message => {
     }
 })
 
+client.on('messageCreate', async message => {
+    if (message.content === '##lang') {
+        if (message.author.bot) return;
+        const supportChannel = client.channels.cache.get(config.msgChannel);
+        if (!supportChannel) return;
+        const row = new Discord.MessageActionRow()
+        .addComponents(
+            new Discord.MessageSelectMenu()
+            .setCustomId('lang')
+            .setPlaceholder('Select Your Language')
+            .setMaxValues(2)
+            .addOptions([
+                {
+                    label: "Arabic",
+                    value: "ar"
+                },
+                {
+                    label: "English",
+                    value: "en"
+                },
+            ])
+        )
+        supportChannel.send({ content: "Hey there! Now that you've read our rules, let's get you set up with some roles.\n\nSelect Your language.", components: [row] })
+    }
+})
+
+client.on('messageCreate', async message => {
+    if (message.content === '##gen') {
+        if (message.author.bot) return;
+        const supportChannel = client.channels.cache.get(config.msgChannel);
+        if (!supportChannel) return;
+        const row = new Discord.MessageActionRow()
+        .addComponents(
+            new Discord.MessageSelectMenu()
+            .setCustomId('gen')
+            .setPlaceholder('Select Your Gender')
+            .addOptions([
+                {
+                    label: "Man",
+                    emoji: "👨",
+                    value: "man"
+                },
+                {
+                    label: "Girl",
+                    emoji: "👧",
+                    value: "girl"
+                },
+            ])
+        )
+        return supportChannel.send({ content: "Select Your Gender.", components: [row] })
+    }
+})
+
+client.on('messageCreate', async message => {
+    if (message.content === '##men') {
+        if (message.author.bot) return;
+        const supportChannel = client.channels.cache.get(config.msgChannel);
+        if (!supportChannel) return;
+        const row = new Discord.MessageActionRow()
+        .addComponents(
+            new Discord.MessageSelectMenu()
+            .setCustomId('men')
+            .setPlaceholder('Get Notifications')
+            .setMaxValues(2)
+            .addOptions([
+                {
+                    label: "Giveaways Mention",
+                    emoji: "🎉",
+                    value: "giveaway"
+                },
+                {
+                    label: "Announcemnt Mention",
+                    emoji: "🔔",
+                    value: "announcemnt"
+                },
+            ])
+        )
+        return supportChannel.send({ content: "Get Notificactions.", components: [row] })
+    }
+})
+
 client.on('interactionCreate', async interaction => {
     if (!interaction.isButton) return;
     if (interaction.customId === 'one') {
@@ -100,6 +181,35 @@ client.on('interactionCreate', async interaction => {
                 msg.channel.delete()
             }
         })
+    }
+})
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isSelectMenu()) return;
+    if (interaction.customId === 'lang') {
+        if (interaction.values.includes('ar')) {
+            const arabicRole = interaction.guild.roles.cache.get('844954800445194291');
+            if (!arabicRole) return;
+            if (interaction.member.roles.cache.has(arabicRole.id)) {
+                await interaction.member.roles.remove(arabicRole, `Removed arabic role by select menu`);
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            } else {
+                await interaction.member.roles.add(arabicRole, `Added arabic role by select menu`)
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            }
+        }
+        if (interaction.values.includes('en')) {
+            const englishRole = interaction.guild.roles.cache.get('844954830183333908');
+            if (!englishRole) return;
+            if (interaction.member.roles.cache.has(englishRole.id)) {
+                await interaction.member.roles.remove(englishRole, `Removed english role by select menu`)
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            } else {
+                await interaction.member.roles.add(englishRole, `Added english role by select menu`);
+                interaction.reply({ content: "Roles Changed.", ephemeral: true })
+            }
+            await interaction.member.roles.add(englishRole, `Added english role by select menu`)
+        }
     }
 })
 

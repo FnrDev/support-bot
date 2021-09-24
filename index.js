@@ -139,6 +139,29 @@ client.on('interactionCreate', async interaction => {
             interaction.reply({ content: data.toString(), ephemeral: true })
         })
     }
+    if (interaction.customId === 'roles') {
+        let textRoles = '';
+        if (interaction.member.roles.cache.size === 1) {
+            return interaction.reply({ content: "You dont have any roles", ephemeral: true })
+        }
+        let num = 0;
+        interaction.member.roles.cache.filter(r => r.id !== interaction.guild.id).forEach(role => {
+            num++
+            textRoles += `**#${num}** \`${role.name}\`\n`
+        })
+        return interaction.reply({ content: `List of your roles:\n\n${textRoles}`, ephemeral: true })
+    }
+    if (interaction.customId === 'remove') {
+        await interaction.deferReply()
+        try {
+            interaction.member.roles.cache.forEach(async role => {
+                interaction.member.roles.remove(role);
+                return interaction.editReply({ content: "Roles Changed", ephemeral: true })
+            })
+        } catch (e) {
+            return console.error(e)
+        }
+    }
     if (interaction.customId === 'sos') {
         const tickChannel = await interaction.guild.channels.create(`${interaction.user.username}-ticket`, {
             parent: config.categoryId,
@@ -269,6 +292,27 @@ client.on('interactionCreate', async interaction => {
                 interaction.reply({ content: "Roles Changed.", ephemeral: true })
             }
         }
+    }
+})
+
+client.on('messageCreate', async message => {
+    if (message.content === '##roles') {
+        const channel = client.channels.cache.get(config.msgChannel);
+        if (!channel) return;
+        const row = new Discord.MessageActionRow()
+        .addComponents(
+            new Discord.MessageButton()
+            .setCustomId('roles')
+            .setStyle('PRIMARY')
+            .setLabel('List Roles')
+        )
+        .addComponents(
+            new Discord.MessageButton()
+            .setCustomId('remove')
+            .setStyle('DANGER')
+            .setLabel('Remove All Roles')
+        )
+        message.channel.send({ content: "Unsure which roles you already have? Click here:", components: [row] })
     }
 })
 
